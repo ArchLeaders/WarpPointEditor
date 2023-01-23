@@ -11,35 +11,45 @@ namespace WarpPointEditor
     public class DockFactory : Factory
     {
         private readonly ShellViewModel _context;
-        public static DocumentDock? Root => (Shell.Layout?.ActiveDockable as IDock)?.ActiveDockable as DocumentDock;
+        public static IDock Root => ((Shell.Layout?.ActiveDockable as IDock)?.ActiveDockable as IDock)!;
         public DockFactory(ShellViewModel context) => _context = context;
+
+        public static (IDock dock, int index) CheckDockable(IDockable root, string id)
+        {
+            if (root is DocumentDock documentDock) {
+                return (documentDock, documentDock.VisibleDockables?.Select(x => x.Id).IndexOf(id) ?? -1);
+            }
+            else if (root is ProportionalDock proportionalDock && proportionalDock.VisibleDockables != null) {
+                foreach (var dockable in proportionalDock.VisibleDockables) {
+                    var search = CheckDockable(dockable, id);
+                    if (search.index >= 0) {
+                        return search;
+                    }
+                }
+            }
+
+            return (Root, -1);
+        }
 
         public static Document AddDocument(Document document)
         {
-            if (Root?.VisibleDockables?.Where(x => x.Id == document.Id).FirstOrDefault() is Document foundDocument) {
-                document = foundDocument;
+            (var dock, var index) = CheckDockable(Root, document.Id);
+            if (index >= 0) {
+                document = (dock.VisibleDockables![index] as Document)!;
             }
             else {
-                (Root?.VisibleDockables ?? throw new KeyNotFoundException("Could not find 'ActorDocuments' on the dock layout")).Add(document);
+                Root.VisibleDockables!.Add(document);
             }
 
-            Root.ActiveDockable = document;
+            dock.ActiveDockable = document;
             return document;
-        }
-
-        public static void RemoveDocument(string id)
-        {
-            int index = Root!.VisibleDockables!.Select(x => x.Id).IndexOf(id);
-            if (index != -1) {
-                Root?.VisibleDockables?.RemoveAt(index);
-            }
         }
 
         public override IRootDock CreateLayout()
         {
             _context.Factory = this;
 
-            var dockLayout = new DocumentDock() {
+            var dockLayout = new DocumentDock {
                 Id = "ActorDocuments",
                 Title = "Actor Documents",
                 VisibleDockables = CreateList<IDockable>(new HomeViewModel())
