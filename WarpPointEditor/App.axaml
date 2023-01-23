@@ -10,6 +10,7 @@
         <StyleInclude Source="avares://Avalonia.Themes.Fluent/FluentDark.xaml" />
         <StyleInclude Source="avares://Material.Icons.Avalonia/App.xaml" />
         <StyleInclude Source="avares://Dock.Avalonia/Themes/DockFluentTheme.axaml" />
+        <StyleInclude Source="/Styles/HyperlinkButton.axaml" />
         <Style>
             <Style.Resources>
                 <SolidColorBrush x:Key="DockApplicationAccentBrushLow"

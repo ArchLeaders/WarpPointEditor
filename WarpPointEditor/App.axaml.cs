@@ -5,7 +5,6 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Generics;
 using Avalonia.Generics.Builders;
 using Avalonia.Markup.Xaml;
-using Avalonia.SettingsFactory;
 using Avalonia.Themes.Fluent;
 using WarpPointEditor.Models;
 using WarpPointEditor.ViewModels;
@@ -15,6 +14,9 @@ namespace WarpPointEditor
 {
     public partial class App : Application
     {
+        public static string Title { get; } = "Warp Point Editor";
+        public static string? Version { get; } = typeof(App).Assembly.GetName().Version?.ToString(3);
+
         public static ShellViewModel Shell { get; set; } = new();
         public static FluentTheme Theme { get; set; } = new(new Uri("avares://BotwActorTool/Styles"));
 

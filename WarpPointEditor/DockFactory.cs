@@ -11,7 +11,7 @@ namespace WarpPointEditor
     public class DockFactory : Factory
     {
         private readonly ShellViewModel _context;
-        public static DocumentDock? Root => (Shell.Layout?.VisibleDockables?[0] as IDock)?.VisibleDockables?[0] as DocumentDock;
+        public static DocumentDock? Root => (Shell.Layout?.ActiveDockable as IDock)?.ActiveDockable as DocumentDock;
         public DockFactory(ShellViewModel context) => _context = context;
 
         public static Document AddDocument(Document document)
@@ -29,7 +29,7 @@ namespace WarpPointEditor
 
         public static void RemoveDocument(string id)
         {
-            int index = (Root?.VisibleDockables?.Select(x => x.Id).IndexOf(id) ?? throw new NullReferenceException());
+            int index = Root!.VisibleDockables!.Select(x => x.Id).IndexOf(id);
             if (index != -1) {
                 Root?.VisibleDockables?.RemoveAt(index);
             }
@@ -42,7 +42,7 @@ namespace WarpPointEditor
             var dockLayout = new DocumentDock() {
                 Id = "ActorDocuments",
                 Title = "Actor Documents",
-                VisibleDockables = CreateList<IDockable>()
+                VisibleDockables = CreateList<IDockable>(new HomeViewModel())
             };
 
             RootDock rootDock = new() {
