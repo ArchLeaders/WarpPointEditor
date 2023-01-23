@@ -17,6 +17,7 @@ public partial class App : Application
     public static string Title { get; } = "Warp Point Editor";
     public static string? Version { get; } = typeof(App).Assembly.GetName().Version?.ToString(3);
 
+    public static ShellView ShellView { get; set; } = null!;
     public static ShellViewModel Shell { get; set; } = new();
     public static FluentTheme Theme { get; set; } = new(new Uri("avares://BotwActorTool/Styles"));
 
@@ -33,7 +34,8 @@ public partial class App : Application
         Current!.Styles[0] = Theme;
 
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
-            desktop.MainWindow = WindowBuilder.Initialize(new ShellView())
+            ShellView = new();
+            desktop.MainWindow = WindowBuilder.Initialize(ShellView)
                 .WithMenu(new ShellMenuModel())
                 .WithWindowColors("SystemChromeLowColor", "SystemChromeHighColor", 0.4)
                 .WithMinBounds(800, 450)
