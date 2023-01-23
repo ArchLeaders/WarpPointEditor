@@ -10,6 +10,6 @@ public class ShellMenuModel
     [Menu("Settings", "_Tools", Icon = MaterialIconKind.CogBox)]
     public static void Settings()
     {
-
+        Shell.Content = new SettingsView(true);
     }
 }

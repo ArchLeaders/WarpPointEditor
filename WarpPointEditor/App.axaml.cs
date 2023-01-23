@@ -1,6 +1,9 @@
 global using static WarpPointEditor.App;
+global using static WarpPointEditor.Core.Settings;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Generics;
+using Avalonia.Generics.Builders;
 using Avalonia.Markup.Xaml;
 using Avalonia.Themes.Fluent;
 using WarpPointEditor.Models;
@@ -19,8 +22,13 @@ namespace WarpPointEditor
             AvaloniaXamlLoader.Load(this);
         }
 
-        public override void OnFrameworkInitializationCompleted()
+        public override async void OnFrameworkInitializationCompleted()
         {
+            LoadConfig();
+
+            Theme.Mode = Config.Theme == "Dark" ? FluentThemeMode.Dark : FluentThemeMode.Light;
+            Current!.Styles[0] = Theme;
+
             if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop) {
                 desktop.MainWindow = WindowBuilder.Initialize(new ShellView())
                     .WithMenu(new ShellMenuModel())
@@ -32,6 +40,15 @@ namespace WarpPointEditor
                 desktop.MainWindow.AttachDevTools();
 #endif
                 ApplicationLoader.Attach(this);
+
+                // Make sure settings are always set
+                SettingsView settings = new(false);
+                if (Config.RequiresInput || settings.ValidateSave() != null) {
+                    Shell.Content = settings;
+                    await Task.Run(() => {
+                        while (Config.RequiresInput) { }
+                    });
+                }
             }
 
             base.OnFrameworkInitializationCompleted();
