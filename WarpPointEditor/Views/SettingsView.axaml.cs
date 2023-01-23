@@ -5,36 +5,29 @@ using Avalonia.SettingsFactory.Core;
 using Avalonia.SettingsFactory.ViewModels;
 using Avalonia.Themes.Fluent;
 using System.Reflection;
-using WarpPointEditor.ViewModels;
 
 namespace WarpPointEditor.Views
 {
     public partial class SettingsView : SettingsFactory, ISettingsValidator
     {
+        internal static SettingsView? Live { get; set; } = null;
+
         private static readonly SettingsFactoryOptions _options = new() {
             AlertAction = (msg) => MessageBox.ShowDialog(msg),
             BrowseAction = async (title) => await new BrowserDialog(BrowserMode.OpenFolder).ShowDialog(),
         };
 
-        public SettingsView() : this(true) { }
-        public SettingsView(bool canCancel)
+        public SettingsView()
         {
             InitializeComponent();
 
             FocusDelegate.PointerPressed += (s, e) => FocusDelegate.Focus();
             FocusDelegate2.PointerPressed += (s, e) => FocusDelegate.Focus();
 
-            AfterSaveEvent += () => {
-                Config.Save();
-                DockFactory.RemoveDocument(nameof(SettingsViewModel));
-            };
+            AfterSaveEvent += async () => await MessageBox.ShowDialog("Saved succefully", "Notice");
+            InitializeSettingsFactory(new SettingsFactoryViewModel(false), this, Config, _options);
 
-            AfterCancelEvent += () => {
-                ValidateSave();
-                DockFactory.RemoveDocument(nameof(SettingsViewModel));
-            };
-
-            InitializeSettingsFactory(new SettingsFactoryViewModel(canCancel), this, Config, _options);
+            Live = this;
         }
 
         public bool? ValidateBool(string key, bool value)
@@ -90,17 +83,17 @@ namespace WarpPointEditor.Views
         public string? ValidateSave(Dictionary<string, bool?> validated)
         {
             if (this["Mode"]!.ToString() == "WiiU") {
-            if (validated["GameDir"] == false) {
-                return "The WiiU game path is invalid.\nPlease correct or delete it before saving.";
-            }
+                if (validated["GameDir"] == false) {
+                    return "The WiiU game path is invalid.\nPlease correct or delete it before saving.";
+                }
 
-            if (validated["UpdateDir"] == false) {
-                return "The WiiU update path is invalid.\nPlease correct or delete it before saving.";
-            }
+                if (validated["UpdateDir"] == false) {
+                    return "The WiiU update path is invalid.\nPlease correct or delete it before saving.";
+                }
 
-            if (validated["DlcDir"] == false) {
-                return "The WiiU DLC path is invalid.\nPlease correct or delete it before saving.";
-            }
+                if (validated["DlcDir"] == false) {
+                    return "The WiiU DLC path is invalid.\nPlease correct or delete it before saving.";
+                }
 
                 if (validated["GameDir"] == null || validated["UpdateDir"] == null) {
                     return "No game or update path has been set for WiiU.\nPlease set one of them before saving or change the game mode to Switch.";
@@ -108,16 +101,16 @@ namespace WarpPointEditor.Views
             }
             else if (this["Mode"]!.ToString() == "Switch") {
                 if (validated["GameDirNx"] == false) {
-                return "The Switch game/update path is invalid.\nPlease correct or delete it before saving.";
-            }
+                    return "The Switch game/update path is invalid.\nPlease correct or delete it before saving.";
+                }
 
-            if (validated["DlcDirNx"] == false) {
-                return "The Switch DLC path is invalid.\nPlease correct or delete it before saving.";
-            }
+                if (validated["DlcDirNx"] == false) {
+                    return "The Switch DLC path is invalid.\nPlease correct or delete it before saving.";
+                }
 
                 if (validated["GameDirNx"] == null) {
                     return "No game path has been set for Switch.\nPlease set one of them before saving or change the game mode to WiiU.";
-            }
+                }
             }
 
             return null;

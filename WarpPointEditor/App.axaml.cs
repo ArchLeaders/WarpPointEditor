@@ -45,7 +45,7 @@ namespace WarpPointEditor
                 ApplicationLoader.Attach(this);
 
                 // Make sure settings are always set
-                SettingsView settings = new(false);
+                SettingsView settings = new();
                 if (Config.RequiresInput || settings.ValidateSave() != null) {
                     DockFactory.AddDocument(new SettingsViewModel());
                     await Task.Run(() => {

@@ -26,13 +26,7 @@
                   ColumnDefinitions="0.6*,*,*">
 
                 <!--  Requires Button 'Cancel' to attach the cancel operation  -->
-                <Button Name="Cancel"
-                        Grid.Column="1"
-                        Margin="5,0"
-                        HorizontalAlignment="Stretch"
-                        HorizontalContentAlignment="Center"
-                        Content="Cancel"
-                        IsEnabled="{Binding CanCancel}" />
+                <Button Name="Cancel" IsVisible="False" />
 
                 <!--  Requires Button 'Save' to attach the save operation  -->
                 <Button Name="Save"

@@ -1,4 +1,5 @@
 ﻿using Dock.Model.ReactiveUI.Controls;
+using WarpPointEditor.Views;
 
 namespace WarpPointEditor.ViewModels;
 
@@ -9,6 +10,12 @@ public class SettingsViewModel : Document
         Id = nameof(SettingsViewModel);
         Title = "Settings";
         CanFloat = false;
-        CanClose = false;
+    }
+
+    public override bool OnClose()
+    {
+        SettingsView.Live?.ValidateSave();
+        SettingsView.Live = null;
+        return base.OnClose();
     }
 }
