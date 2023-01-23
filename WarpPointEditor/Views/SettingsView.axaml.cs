@@ -89,6 +89,7 @@ namespace WarpPointEditor.Views
 
         public string? ValidateSave(Dictionary<string, bool?> validated)
         {
+            if (this["Mode"]!.ToString() == "WiiU") {
             if (validated["GameDir"] == false) {
                 return "The WiiU game path is invalid.\nPlease correct or delete it before saving.";
             }
@@ -101,7 +102,12 @@ namespace WarpPointEditor.Views
                 return "The WiiU DLC path is invalid.\nPlease correct or delete it before saving.";
             }
 
-            if (validated["GameDirNx"] == false && validated["GameDir"] == false) {
+                if (validated["GameDir"] == null || validated["UpdateDir"] == null) {
+                    return "No game or update path has been set for WiiU.\nPlease set one of them before saving or change the game mode to Switch.";
+                }
+            }
+            else if (this["Mode"]!.ToString() == "Switch") {
+                if (validated["GameDirNx"] == false) {
                 return "The Switch game/update path is invalid.\nPlease correct or delete it before saving.";
             }
 
@@ -109,12 +115,9 @@ namespace WarpPointEditor.Views
                 return "The Switch DLC path is invalid.\nPlease correct or delete it before saving.";
             }
 
-            if (validated["GameDir"] == null && validated["UpdateDir"] == null && validated["GameDirNx"] == null) {
-                return "No game path has been set for Switch or WiiU.\nPlease set one of them before saving.";
+                if (validated["GameDirNx"] == null) {
+                    return "No game path has been set for Switch.\nPlease set one of them before saving or change the game mode to WiiU.";
             }
-
-            if (validated["GameDir"] == true && validated["UpdateDir"] == null) {
-                return "The WiiU update path has not been set.\nPlease set it before saving.";
             }
 
             return null;
