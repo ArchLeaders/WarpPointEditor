@@ -6,80 +6,79 @@ using Dock.Model.ReactiveUI.Controls;
 using DynamicData;
 using WarpPointEditor.ViewModels;
 
-namespace WarpPointEditor
-{
-    public class DockFactory : Factory
-    {
-        private readonly ShellViewModel _context;
-        public static IDock Root => ((Shell.Layout?.ActiveDockable as IDock)?.ActiveDockable as IDock)!;
-        public DockFactory(ShellViewModel context) => _context = context;
+namespace WarpPointEditor;
 
-        public static (IDock dock, int index) CheckDockable(IDockable root, string id)
-        {
-            if (root is DocumentDock documentDock) {
-                return (documentDock, documentDock.VisibleDockables?.Select(x => x.Id).IndexOf(id) ?? -1);
-            }
-            else if (root is ProportionalDock proportionalDock && proportionalDock.VisibleDockables != null) {
-                foreach (var dockable in proportionalDock.VisibleDockables) {
-                    var search = CheckDockable(dockable, id);
-                    if (search.index >= 0) {
-                        return search;
-                    }
+public class DockFactory : Factory
+{
+    private readonly ShellViewModel _context;
+    public static IDock Root => ((Shell.Layout?.ActiveDockable as IDock)?.ActiveDockable as IDock)!;
+    public DockFactory(ShellViewModel context) => _context = context;
+
+    public static (IDock dock, int index) CheckDockable(IDockable root, string id)
+    {
+        if (root is DocumentDock documentDock) {
+            return (documentDock, documentDock.VisibleDockables?.Select(x => x.Id).IndexOf(id) ?? -1);
+        }
+        else if (root is ProportionalDock proportionalDock && proportionalDock.VisibleDockables != null) {
+            foreach (var dockable in proportionalDock.VisibleDockables) {
+                var search = CheckDockable(dockable, id);
+                if (search.index >= 0) {
+                    return search;
                 }
             }
-
-            return (Root, -1);
         }
 
-        public static Document AddDocument(Document document)
-        {
-            (var dock, var index) = CheckDockable(Root, document.Id);
-            if (index >= 0) {
-                document = (dock.VisibleDockables![index] as Document)!;
-            }
-            else {
-                Root.VisibleDockables!.Add(document);
-            }
+        return (Root, -1);
+    }
 
-            dock.ActiveDockable = document;
-            return document;
+    public static Document AddDocument(Document document)
+    {
+        (var dock, var index) = CheckDockable(Root, document.Id);
+        if (index >= 0) {
+            document = (dock.VisibleDockables![index] as Document)!;
+        }
+        else {
+            Root.VisibleDockables!.Add(document);
         }
 
-        public override IRootDock CreateLayout()
-        {
-            _context.Factory = this;
+        dock.ActiveDockable = document;
+        return document;
+    }
 
-            var dockLayout = new DocumentDock {
-                Id = "ActorDocuments",
-                Title = "Actor Documents",
-                VisibleDockables = CreateList<IDockable>(new HomeViewModel())
-            };
+    public override IRootDock CreateLayout()
+    {
+        _context.Factory = this;
 
-            RootDock rootDock = new() {
-                Id = "RootLayout",
-                Title = "RootLayout",
-                ActiveDockable = dockLayout,
-                VisibleDockables = CreateList<IDockable>(dockLayout)
-            };
+        var dockLayout = new DocumentDock {
+            Id = "ActorDocuments",
+            Title = "Actor Documents",
+            VisibleDockables = CreateList<IDockable>(new HomeViewModel())
+        };
 
-            IRootDock root = CreateRootDock();
-            root.Id = "RootDock";
-            root.Title = "RootDock";
-            root.ActiveDockable = rootDock;
-            root.DefaultDockable = rootDock;
-            root.VisibleDockables = CreateList<IDockable>(rootDock);
+        RootDock rootDock = new() {
+            Id = "RootLayout",
+            Title = "RootLayout",
+            ActiveDockable = dockLayout,
+            VisibleDockables = CreateList<IDockable>(dockLayout)
+        };
 
-            _context.Layout = root;
-            return (IRootDock)_context.Layout;
-        }
+        IRootDock root = CreateRootDock();
+        root.Id = "RootDock";
+        root.Title = "RootDock";
+        root.ActiveDockable = rootDock;
+        root.DefaultDockable = rootDock;
+        root.VisibleDockables = CreateList<IDockable>(rootDock);
 
-        public override void InitLayout(IDockable layout)
-        {
-            HostWindowLocator = new Dictionary<string, Func<IHostWindow>> {
-                [nameof(IDockWindow)] = () => new HostWindow()
-            };
+        _context.Layout = root;
+        return (IRootDock)_context.Layout;
+    }
 
-            base.InitLayout(layout);
-        }
+    public override void InitLayout(IDockable layout)
+    {
+        HostWindowLocator = new Dictionary<string, Func<IHostWindow>> {
+            [nameof(IDockWindow)] = () => new HostWindow()
+        };
+
+        base.InitLayout(layout);
     }
 }

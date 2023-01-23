@@ -46,7 +46,7 @@
                                    FontFamily="Ubuntu"
                                    FontStyle="Italic"
                                    Foreground="{DynamicResource SystemBaseMediumColor}"
-                                   Text="Drag and Drop a Mod Folder"
+                                   Text="Drag and Drop a mod's content folder to open"
                                    TextAlignment="Center" />
                     </StackPanel>
                 </Border>

@@ -2,7 +2,6 @@
 using Avalonia.Generics.Dialogs;
 using Avalonia.MenuFactory.Attributes;
 using Material.Icons;
-using System.Diagnostics;
 using WarpPointEditor.Core.Extensions;
 using WarpPointEditor.ViewModels;
 

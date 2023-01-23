@@ -1,11 +1,8 @@
 ﻿#pragma warning disable CA1822 // Mark members as static
 
-global using static WarpPointEditor.Core.Settings;
-
 using Avalonia.SettingsFactory.Core;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using static System.Environment;
 
 namespace WarpPointEditor.Core;
