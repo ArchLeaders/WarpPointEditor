@@ -5,6 +5,7 @@ using Dock.Model.ReactiveUI;
 using Dock.Model.ReactiveUI.Controls;
 using DynamicData;
 using WarpPointEditor.ViewModels;
+using WarpPointEditor.Views;
 
 namespace WarpPointEditor;
 
@@ -14,21 +15,23 @@ public class DockFactory : Factory
     public static IDock Root => ((Shell.Layout?.ActiveDockable as IDock)?.ActiveDockable as IDock)!;
     public DockFactory(ShellViewModel context) => _context = context;
 
-    public static (IDock dock, int index) CheckDockable(IDockable root, string id)
+    public static (DocumentDock dock, int index) CheckDockable(IDockable root, string id)
     {
+        DocumentDock _default = null!;
+
         if (root is DocumentDock documentDock) {
             return (documentDock, documentDock.VisibleDockables?.Select(x => x.Id).IndexOf(id) ?? -1);
         }
         else if (root is ProportionalDock proportionalDock && proportionalDock.VisibleDockables != null) {
             foreach (var dockable in proportionalDock.VisibleDockables) {
-                var search = CheckDockable(dockable, id);
-                if (search.index >= 0) {
-                    return search;
+                (_default, var index) = CheckDockable(dockable, id);
+                if (index >= 0) {
+                    return (_default, index);
                 }
             }
         }
 
-        return (Root, -1);
+        return (_default, -1);
     }
 
     public static Document AddDocument(Document document)
@@ -38,7 +41,7 @@ public class DockFactory : Factory
             document = (dock.VisibleDockables![index] as Document)!;
         }
         else {
-            Root.VisibleDockables!.Add(document);
+            dock.VisibleDockables!.Add(document);
         }
 
         dock.ActiveDockable = document;
@@ -76,7 +79,12 @@ public class DockFactory : Factory
     public override void InitLayout(IDockable layout)
     {
         HostWindowLocator = new Dictionary<string, Func<IHostWindow>> {
-            [nameof(IDockWindow)] = () => new HostWindow()
+            [nameof(IDockWindow)] = () => new HostWindow() {
+                MinWidth = 770,
+                MinHeight = 430,
+                ShowInTaskbar = true,
+                Icon = App.ShellView.Icon
+            }
         };
 
         base.InitLayout(layout);
