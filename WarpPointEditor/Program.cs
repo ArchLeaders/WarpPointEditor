@@ -1,5 +1,7 @@
 using Avalonia;
 using Avalonia.ReactiveUI;
+using Projektanker.Icons.Avalonia;
+using Projektanker.Icons.Avalonia.FontAwesome;
 
 namespace WarpPointEditor
 {
@@ -17,6 +19,7 @@ namespace WarpPointEditor
             => AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .LogToTrace()
+                .WithIcons(container => container.Register<FontAwesomeIconProvider>())
                 .UseReactiveUI();
     }
 }
