@@ -5,6 +5,7 @@ using Avalonia.SettingsFactory.Core;
 using Avalonia.SettingsFactory.ViewModels;
 using Avalonia.Themes.Fluent;
 using System.Reflection;
+using WarpPointEditor.ViewModels;
 
 namespace WarpPointEditor.Views
 {
@@ -15,7 +16,7 @@ namespace WarpPointEditor.Views
             BrowseAction = async (title) => await new BrowserDialog(BrowserMode.OpenFolder).ShowDialog(),
         };
 
-        public SettingsView() => InitializeComponent();
+        public SettingsView() : this(true) { }
         public SettingsView(bool canCancel)
         {
             InitializeComponent();
@@ -25,12 +26,12 @@ namespace WarpPointEditor.Views
 
             AfterSaveEvent += () => {
                 Config.Save();
-                Shell.Content = null;
+                DockFactory.RemoveDocument(nameof(SettingsViewModel));
             };
 
             AfterCancelEvent += () => {
                 ValidateSave();
-                Shell.Content = null;
+                DockFactory.RemoveDocument(nameof(SettingsViewModel));
             };
 
             InitializeSettingsFactory(new SettingsFactoryViewModel(canCancel), this, Config, _options);

@@ -5,6 +5,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Generics;
 using Avalonia.Generics.Builders;
 using Avalonia.Markup.Xaml;
+using Avalonia.SettingsFactory;
 using Avalonia.Themes.Fluent;
 using WarpPointEditor.Models;
 using WarpPointEditor.ViewModels;
@@ -44,11 +45,16 @@ namespace WarpPointEditor
                 // Make sure settings are always set
                 SettingsView settings = new(false);
                 if (Config.RequiresInput || settings.ValidateSave() != null) {
-                    Shell.Content = settings;
+                    DockFactory.AddDocument(new SettingsViewModel());
                     await Task.Run(() => {
                         while (Config.RequiresInput) { }
                     });
                 }
+
+                // Create dock layout
+                var factory = new DockFactory(Shell);
+                var layout = factory.CreateLayout();
+                factory.InitLayout(layout);
             }
 
             base.OnFrameworkInitializationCompleted();

@@ -1,14 +1,22 @@
-﻿using Avalonia.Controls;
+﻿#pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider declaring as nullable.
+
+using Avalonia.Controls;
+using Dock.Model.Core;
 using WarpPointEditor.Views;
 
 namespace WarpPointEditor.ViewModels;
 
 public class ShellViewModel : ReactiveObject
 {
-    private readonly UserControl _default = new AppView();
-    private UserControl? _content;
-    public UserControl? Content {
-        get => _content ?? _default;
-        set => this.RaiseAndSetIfChanged(ref _content, value);
+    private IDock layout;
+    public IDock Layout {
+        get => layout;
+        set => this.RaiseAndSetIfChanged(ref layout, value);
+    }
+
+    private IFactory factory;
+    public IFactory Factory {
+        get => factory;
+        set => this.RaiseAndSetIfChanged(ref factory, value);
     }
 }

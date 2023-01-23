@@ -8,7 +8,6 @@
              mc:Ignorable="d">
     <TextBlock HorizontalAlignment="Center"
                VerticalAlignment="Center"
-               FontFamily="/Assets/Fonts/#Ubuntu"
                FontSize="25">
         - Botw Warp Point Editor -
     </TextBlock>
